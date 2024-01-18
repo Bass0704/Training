@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'Bass@7499',
+  password: 'Leave@123',
   database: 'mymam',
 });
 
@@ -67,8 +67,8 @@ app.post('/api/signup', (req, res) => {
         }
       }); 
       
-    });     
-
+    }); 
+  
 // Login Users       
    
     app.post('/api/login', (req, res) => {
@@ -87,11 +87,11 @@ app.post('/api/signup', (req, res) => {
       
           if (results.length === 0) {
             return res.status(401).json({ message: 'Invalid credentials' });
-          }
+          } 
       
           return res.status(200).json({ message: 'Login successful', user: results[0] });
-        }); 
-      });
+        });   
+      }); 
     
 // Get Single User      
   
@@ -110,18 +110,18 @@ app.post('/api/signup', (req, res) => {
           }
         }
       });
-    }); 
+    });    
 
-//Update User      
+//UpdateUser      
 
     app.put('/api/update', (req, res) => {
-      const userID = req.query.id
+      const userID = req.query.id  
      
     
       const {username, email, phoneNumber, password } = req.body;
       if (!username || !email || !phoneNumber || !password) {
         return res.status(400).json({ error: 'All fields are required' });  
-      }
+      }    
     
       if (!/^[a-zA-Z\s]+$/.test(username)) {
         return res.status(400).json({ error: 'username should not contain special characters or numbers' });
@@ -147,12 +147,12 @@ app.post('/api/signup', (req, res) => {
               res.json({ message: 'user updated successfully' });
             } else {
               res.status(404).json({ error: 'user not found' });
-            }
+            } 
           }
-        });
+        }); 
       }); 
       
-// Delete User      
+// DeleteUser      
 
      app.delete('/api/delete', (req, resp) => {
      
@@ -161,7 +161,7 @@ app.post('/api/signup', (req, res) => {
          db.query('DELETE FROM users WHERE id = ?', [id],
              function(error, rows) {
                  if (!error) {
-                     console.log('Successful deleted!');
+                     console.log('Successfully Deleted!');
                      resp.json(rows);    
                  }
                  else {
@@ -169,9 +169,9 @@ app.post('/api/signup', (req, res) => {
                  }
              });
      
-           }); 
+           });  
      
-// Get All Users      
+//GetAllUsers      
     app.get('/api/allusers', (req, res) => {
      db.query('SELECT * FROM users', (err, results) => { 
       if (err) {
@@ -181,8 +181,8 @@ app.post('/api/signup', (req, res) => {
         
           return res.status(200).json(results);
           });
-        });      
-    
+        });         
+       
 
 
 
@@ -190,5 +190,7 @@ app.post('/api/signup', (req, res) => {
     app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);
       }); 
+
+      
                
  
