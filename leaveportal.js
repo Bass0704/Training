@@ -31,6 +31,7 @@ app.use(bodyParser.json());
 // userdetails Employee
 
 
+
 app.post('/api/signup', (req, res) => {
   if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method Not Allowed' });
@@ -48,7 +49,7 @@ app.post('/api/signup', (req, res) => {
     if (!/^[a-zA-Z\s]+$/.test(Username)) {
       return res.status(400).json({ error: 'username should not contain special characters or numbers' });
     }
-    if (Password.length < 8 || !/[a-zA-Z]/.test(Password) || !/\d/.test(Password) || !/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(Password)) {
+    if (Password.length < 8 || !/[a-zA-Z]/.test(Password) || !/\d/.test(Password) || !/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(Password)){
       return res.status(400).json({ error: 'Password must meet minimum security requirements' });
     }
     if (!/\S+@\S+\.\S+/.test(EmailID)) {
@@ -68,7 +69,7 @@ app.post('/api/signup', (req, res) => {
       }
     }); 
      
-  });   
+  });     
  
 // Login Employee:  
 
@@ -87,8 +88,8 @@ app.post('/api/signup', (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
           }
           return res.status(200).json({ message: 'Login successful', user: results[0] });
-        });  
-      });        
+        });    
+      });         
  
 // Get Single Employee:      
   
@@ -106,8 +107,8 @@ app.get('/api/getoneEmployee', (req, res) => {
         res.send(results[0]);
       }
     }
-  });     
-});  
+  });      
+});    
 
 
 
