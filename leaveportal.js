@@ -28,7 +28,7 @@ db.connect((err) => {
 });
 app.use(bodyParser.json());
 
-// userdetails Employee
+// employeedetails Employee
 
 
 
@@ -40,9 +40,9 @@ app.post('/api/signup', (req, res) => {
     if (!req.is('application/json')) {
       return res.status(415).json({ error: 'Unsupported Media Type' });
     } 
-    const  { Username, EmailID, Password} = req.body;
+    const  { EmployerID,Username, EmailID, Password} = req.body;
 
-    if (!Username || !EmailID || !Password) {
+    if (!EmployerID || !Username || !EmailID || !Password) {
       return res.status(400).json({ error: 'All fields are required' });  
     }
    
@@ -57,15 +57,15 @@ app.post('/api/signup', (req, res) => {
     } 
   
     
-     const query = 'INSERT INTO userdetails (Username, EmailID, Password,CreatedOn) VALUES (?, ?, ?,NOW())';
+     const query = 'INSERT INTO employeedetails (EmployerID,Username, EmailID, Password,CreatedOn) VALUES (?,?, ?, ?,NOW())';
 
-    db.query(query, [Username, EmailID, Password], (err, results) => {
+    db.query(query, [EmployerID,Username, EmailID, Password], (err, results) => {
       if (err) {
         console.error(err);
         res.status(500).send('Error creating item');
       } else {
         console.log('Employee created successfully');
-        res.status(201).json({ id: results.insertId,  Username, EmailID, Password });
+        res.status(201).json({ id: results.insertId,  EmployerID,Username, EmailID, Password });
       }
     }); 
      
@@ -78,7 +78,7 @@ app.post('/api/signup', (req, res) => {
         if (!EmailID || !Password) {
           return res.status(400).json({ message:'EmailID and Password are required'});
         }
-        const query = 'SELECT * FROM userdetails WHERE EmailID = ? AND Password = ?';
+        const query = 'SELECT * FROM employeedetails WHERE EmailID = ? AND Password = ?';
         db.query(query, [EmailID, Password], (err, results) => {
           if (err) { 
             console.error('Error executing query:', err);
@@ -94,10 +94,10 @@ app.post('/api/signup', (req, res) => {
 // Get Single Employee:      
   
 app.get('/api/getoneEmployee', (req, res) => {
-  const Employee = req.query.EmployeeId
+  const Employee = req.query.EmployerId
   console.log(Employee)
 
-  db.query('SELECT * FROM userdetails WHERE EmployeeId = ?', [Employee], (err, results) => {
+  db.query('SELECT * FROM employeedetails WHERE EmployerId = ?', [Employee], (err, results) => {
     if (err) {
       res.status(500).send('Error retrieving user');
     } else {
@@ -115,7 +115,7 @@ app.get('/api/getoneEmployee', (req, res) => {
 
 //GetAllEmployee      
 app.get('/api/allEmployee', (req, res) => {
-  db.query('SELECT * FROM userdetails', (err, results) => { 
+  db.query('SELECT * FROM employeedetails', (err, results) => { 
    if (err) {
        console.error('MySQL query error:', err);
        return res.status(500).json({ error: 'Internal Server Error' });
@@ -130,9 +130,9 @@ app.get('/api/allEmployee', (req, res) => {
 
      app.delete('/api/deleteEmployee', (req, resp) => {
      
-      var id = req.query.EmployeeId;
+      var id = req.query.EmployerId;
       
-          db.query('DELETE FROM userdetails WHERE EmployeeId= ?', [id],
+          db.query('DELETE FROM employeedetails WHERE EmployerId= ?', [id],
               function(error, rows) {
                   if (!error) {
                       console.log('Successfully Deleted!');
@@ -148,7 +148,7 @@ app.get('/api/allEmployee', (req, res) => {
  //UpdateEmployee      
 
  app.put('/api/updateEmployee', (req, res) => {
-  const EmpID = req.query.EmployeeId  
+  const EmpID = req.query.EmployerId  
  
 
   const {Username, EmailID, Password} = req.body;
@@ -168,7 +168,7 @@ app.get('/api/allEmployee', (req, res) => {
 
 
   db.query(
-    'UPDATE userdetails SET Username=?, EmailID=?, Password=? WHERE EmployeeId=?',
+    'UPDATE employeedetails SET Username=?, EmailID=?, Password=? WHERE EmployerId=?',
     [Username, EmailID, Password,EmpID],(err, result) => {
       if (err) {
         console.error('Error updating user:', err);
