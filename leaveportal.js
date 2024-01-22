@@ -15,7 +15,7 @@ const db = mysql.createConnection({
   user: 'root',
   password: 'Leave@123',
   database: 'leaveportal',
-});
+}); 
 
 //Db connection
 
@@ -28,22 +28,23 @@ db.connect((err) => {
 });
 app.use(bodyParser.json());
 
-// Signup Employee
+// userdetails Employee
+
 
 app.post('/api/signup', (req, res) => {
   if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method Not Allowed' });
-    } 
+    }  
   
     if (!req.is('application/json')) {
       return res.status(415).json({ error: 'Unsupported Media Type' });
-    }
+    } 
     const  { Username, EmailID, Password} = req.body;
 
     if (!Username || !EmailID || !Password) {
       return res.status(400).json({ error: 'All fields are required' });  
     }
-  
+   
     if (!/^[a-zA-Z\s]+$/.test(Username)) {
       return res.status(400).json({ error: 'username should not contain special characters or numbers' });
     }
@@ -52,10 +53,10 @@ app.post('/api/signup', (req, res) => {
     }
     if (!/\S+@\S+\.\S+/.test(EmailID)) {
       return res.status(400).json({ error: 'Invalid email format' });
-    }
+    } 
   
     
-     const query = 'INSERT INTO signup (Username, EmailID, Password) VALUES (?, ?, ?)';
+     const query = 'INSERT INTO userdetails (Username, EmailID, Password,CreatedOn) VALUES (?, ?, ?,NOW())';
 
     db.query(query, [Username, EmailID, Password], (err, results) => {
       if (err) {
@@ -66,19 +67,19 @@ app.post('/api/signup', (req, res) => {
         res.status(201).json({ id: results.insertId,  Username, EmailID, Password });
       }
     }); 
-    
-  });  
+     
+  });   
+ 
+// Login Employee:  
 
-// Login Employee
-
-     app.post('/api/Leavelogin', (req, res) => {
+     app.post('/api/login', (req, res) => { 
         const { EmailID, Password } = req.body;
         if (!EmailID || !Password) {
-          return res.status(400).json({ message: 'EmailID and Password are required' });
+          return res.status(400).json({ message:'EmailID and Password are required'});
         }
-        const query = 'SELECT * FROM signup WHERE EmailID = ? AND Password = ?';
+        const query = 'SELECT * FROM userdetails WHERE EmailID = ? AND Password = ?';
         db.query(query, [EmailID, Password], (err, results) => {
-          if (err) {
+          if (err) { 
             console.error('Error executing query:', err);
             return res.status(500).json({ message: 'Internal Server Error' });
           }
@@ -86,16 +87,16 @@ app.post('/api/signup', (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
           }
           return res.status(200).json({ message: 'Login successful', user: results[0] });
-        });
-      }); 
-
-// Get Single Employee      
+        });  
+      });        
+ 
+// Get Single Employee:      
   
 app.get('/api/getoneEmployee', (req, res) => {
   const Employee = req.query.EmployeeId
   console.log(Employee)
 
-  db.query('SELECT * FROM signup WHERE EmployeeId = ?', [Employee], (err, results) => {
+  db.query('SELECT * FROM userdetails WHERE EmployeeId = ?', [Employee], (err, results) => {
     if (err) {
       res.status(500).send('Error retrieving user');
     } else {
@@ -105,12 +106,15 @@ app.get('/api/getoneEmployee', (req, res) => {
         res.send(results[0]);
       }
     }
-  });
-});    
+  });     
+});  
+
+
+
 
 //GetAllEmployee      
 app.get('/api/allEmployee', (req, res) => {
-  db.query('SELECT * FROM signup', (err, results) => { 
+  db.query('SELECT * FROM userdetails', (err, results) => { 
    if (err) {
        console.error('MySQL query error:', err);
        return res.status(500).json({ error: 'Internal Server Error' });
@@ -127,7 +131,7 @@ app.get('/api/allEmployee', (req, res) => {
      
       var id = req.query.EmployeeId;
       
-          db.query('DELETE FROM signup WHERE EmployeeId= ?', [id],
+          db.query('DELETE FROM userdetails WHERE EmployeeId= ?', [id],
               function(error, rows) {
                   if (!error) {
                       console.log('Successfully Deleted!');
@@ -138,7 +142,7 @@ app.get('/api/allEmployee', (req, res) => {
                   }
               });
       
-            });  
+            });   
 
  //UpdateEmployee      
 
@@ -149,21 +153,21 @@ app.get('/api/allEmployee', (req, res) => {
   const {Username, EmailID, Password} = req.body;
   if (!Username || !EmailID || !Password) {
     return res.status(400).json({ error: 'All fields are required' });  
-  }    
-
+  }     
+ 
   if (!/^[a-zA-Z\s]+$/.test(Username)) {
     return res.status(400).json({ error: 'username should not contain special characters or numbers' });
   }
   if (Password.length < 8 || !/[a-zA-Z]/.test(Password) || !/\d/.test(Password) || !/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(Password)) {
     return res.status(400).json({ error: 'Password must meet minimum security requirements' });
-  }
+  } 
   if (!/\S+@\S+\.\S+/.test(EmailID)) {
     return res.status(400).json({ error: 'Invalid email format' });
-  }
+  }  
 
 
   db.query(
-    'UPDATE signup SET Username=?, EmailID=?, Password=? WHERE EmployeeId=?',
+    'UPDATE userdetails SET Username=?, EmailID=?, Password=? WHERE EmployeeId=?',
     [Username, EmailID, Password,EmpID],(err, result) => {
       if (err) {
         console.error('Error updating user:', err);
@@ -173,14 +177,14 @@ app.get('/api/allEmployee', (req, res) => {
           res.json({ message: 'user updated successfully' });
         } else {
           res.status(404).json({ error: 'user not found' });
-        } 
-      }
-    }); 
-  });            
+        }  
+      } 
+    });  
+  });                  
 
 
  //Listen and serve port
 
     app.listen(port, () => {
-      console.log(`Server is running on http://localhost:${port}`);
-      });    
+      console.log(`Server is running on http://localhost:${port}`); 
+      }); 

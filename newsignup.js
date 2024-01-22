@@ -65,9 +65,9 @@ app.post('/api/signup', (req, res) => {
           console.log('User created successfully');
           res.status(201).json({ id: results.insertId,  username, email, phoneNumber, password });
         }
-      }); 
+      });   
       
-    }); 
+    });   
   
 // Login Users       
    
@@ -91,9 +91,10 @@ app.post('/api/signup', (req, res) => {
       
           return res.status(200).json({ message: 'Login successful', user: results[0] });
         });   
-      }); 
+      });  
+
     
-// Get Single User      
+// GetSingle User      
   
     app.get('/api/getoneuser', (req, res) => {
       const userID = req.query.id
@@ -110,8 +111,8 @@ app.post('/api/signup', (req, res) => {
           }
         }
       });
-    });    
-
+    });     
+ 
 //UpdateUser      
 
     app.put('/api/update', (req, res) => {
@@ -121,7 +122,7 @@ app.post('/api/signup', (req, res) => {
       const {username, email, phoneNumber, password } = req.body;
       if (!username || !email || !phoneNumber || !password) {
         return res.status(400).json({ error: 'All fields are required' });  
-      }    
+      }     
     
       if (!/^[a-zA-Z\s]+$/.test(username)) {
         return res.status(400).json({ error: 'username should not contain special characters or numbers' });
@@ -150,7 +151,8 @@ app.post('/api/signup', (req, res) => {
             } 
           }
         }); 
-      }); 
+      });   
+
       
 // DeleteUser      
 
