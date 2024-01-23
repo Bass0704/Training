@@ -203,7 +203,7 @@ app.get('/api/allEmployee', (req, res) => {
         res.status(201).json({ leaveDuration });
       }
     });
-  });
+  }); 
   app.get('/leavedetails', (req, res) => {
     const ID = req.query.EmployerId;  
   
@@ -212,7 +212,7 @@ app.get('/api/allEmployee', (req, res) => {
       if (error) {
         console.error('Error retrieving leave details: ' + error.message);
         return res.status(500).json({ error: 'Internal Server Error' });
-      }
+      } 
   
       if (results.length === 0) {
         return res.status(404).json({ error: 'Leave request not found' });
@@ -223,8 +223,8 @@ app.get('/api/allEmployee', (req, res) => {
   
       return res.status(200).json({ message: 'Duration', LeaveDays: duration,From:From_date,To:To_date,Reason:Reason_for_leave,Manager:Manager_name});
       
-    });       
-  });
+    });   
+  });  
   
   function calculateLeaveDuration(startDate, endDate) {
     const start = new Date(startDate);
@@ -243,13 +243,14 @@ app.get('/api/allEmployee', (req, res) => {
       const LeaveDays = endMoment - startMoment;
       const durationInDays = LeaveDays / (1000 * 60 * 60 * 24);
       return durationInDays;
-    }   
+    }    
 
 
  //Listen and serve port
 
     app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`); 
-      });  
+      });   
+
        
  
