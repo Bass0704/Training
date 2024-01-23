@@ -116,14 +116,14 @@ app.post('/api/signup', (req, res) => {
 //UpdateUser      
 
     app.put('/api/update', (req, res) => {
-      const userID = req.query.id  
+      const userID = req.query.id   
      
     
       const {username, email, phoneNumber, password } = req.body;
       if (!username || !email || !phoneNumber || !password) {
         return res.status(400).json({ error: 'All fields are required' });  
       }     
-    
+     
       if (!/^[a-zA-Z\s]+$/.test(username)) {
         return res.status(400).json({ error: 'username should not contain special characters or numbers' });
       }
