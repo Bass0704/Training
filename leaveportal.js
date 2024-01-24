@@ -26,7 +26,7 @@ db.connect((err) => {
   }
   console.log('Connected to MySQL');
 });
-app.use(bodyParser.json());
+app.use(bodyParser.json());  
 
 // employeedetails Employee
 
@@ -42,7 +42,7 @@ app.post('/api/signup', (req, res) => {
 
     if (!EmployerID || !Username || !EmailID || !Password) {
       return res.status(400).json({ error: 'All fields are required' });  
-    }
+    } 
    
     if (!/^[a-zA-Z\s]+$/.test(Username)) {
       return res.status(400).json({ error: 'username should not contain special characters or numbers' });
@@ -52,15 +52,15 @@ app.post('/api/signup', (req, res) => {
     }
     if (!/\S+@\S+\.\S+/.test(EmailID)) {
       return res.status(400).json({ error: 'Invalid email format' });
-    } 
+    }   
     const checkEmailQuery = 'SELECT * FROM employeedetails WHERE EmailID = ?';
   db.query(checkEmailQuery, [EmailID], (err, results) => {
     if (err) {
       console.error('MySQL query error:', err);
       res.status(500).send('Internal Server Error');
     } else if (results.length > 0) {
-      res.status(400).json({ error: 'Email address already exists' });
-    } else {
+      res.status(400).json({ error: 'Email address already exists' });               
+    } else { 
   
     
      const query = 'INSERT INTO employeedetails (EmployerID,Username, EmailID, Password,CreatedOn) VALUES (?,?, ?, ?,NOW())';
@@ -70,15 +70,15 @@ app.post('/api/signup', (req, res) => {
         console.error(err);
         res.status(500).send('Error creating item');
       } else {
-        console.log('Employee created successfully');
+        console.log('Employee created successfully'); 
         res.status(201).json({ id: results.insertId,  EmployerID,Username, EmailID, Password });
-      }
-    }); 
+      } 
+    });  
   }
   });  
-});   
+});       
  
-// Login Employee:  
+//Login Employee:  
 
      app.post('/api/login', (req, res) => { 
         const { EmailID, Password } = req.body;
@@ -90,13 +90,13 @@ app.post('/api/signup', (req, res) => {
           if (err) { 
             console.error('Error executing query:', err);
             return res.status(500).json({ message: 'Internal Server Error' });
-          }
+          } 
           if (results.length === 0) {
             return res.status(401).json({ message: 'Invalid credentials' });
           }
           return res.status(200).json({ message: 'Login successful', user: results[0] });
         });    
-      });         
+      });               
  
 // Get Single Employee:      
   
@@ -114,8 +114,9 @@ app.get('/api/getoneEmployee', (req, res) => {
         res.send(results[0]);
       }
     }
-  });      
-});    
+  });       
+}); 
+
 
 //GetAllEmployee      
 app.get('/api/allEmployee', (req, res) => {
@@ -147,12 +148,12 @@ app.get('/api/allEmployee', (req, res) => {
                   }
               });
       
-            });   
+            });    
 
  //UpdateEmployee      
 
  app.put('/api/updateEmployee', (req, res) => {
-  const EmpID = req.query.EmployerId  
+  const EmpID = req.query.EmployerId    
  
 
   const {Username,  Password} = req.body;
@@ -165,11 +166,11 @@ app.get('/api/allEmployee', (req, res) => {
   }
   if (Password.length < 8 || !/[a-zA-Z]/.test(Password) || !/\d/.test(Password) || !/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(Password)) {
     return res.status(400).json({ error: 'Password must meet minimum security requirements' });
-  } 
+  }  
     
    
 
-  db.query(
+ db.query(
      'UPDATE employeedetails SET Username=?,  Password=? WHERE EmployerId=?', 
     [Username,  Password,EmpID],(err, result) => {
       if (err) {
@@ -190,24 +191,24 @@ app.get('/api/allEmployee', (req, res) => {
 
   //Leave
   app.post('/leaveRequest', (req, res) => {
-    const { EmployerId, From_date, To_date,Reason_for_leave,Manager_name } = req.body;
+    const { Username,EmployerId, From_date, To_date,Reason_for_leave,Manager_name } = req.body;
   
     const leaveDuration = calculateLeaveDuration(From_date, To_date);
   
-    const insertLeaveQuery = 'INSERT INTO leaveduration (EmployerId, From_date, To_date,Reason_for_leave,Manager_name,duration) VALUES (?, ?, ?,?,?,?)';
-    db.query(insertLeaveQuery, [EmployerId, From_date, To_date,Reason_for_leave,Manager_name,leaveDuration], (err, result) => {
+    const insertLeaveQuery = 'INSERT INTO leaveduration (Username,EmployerId, From_date, To_date,Reason_for_leave,Manager_name,duration) VALUES (?,?, ?, ?,?,?,?)';
+    db.query(insertLeaveQuery, [Username,EmployerId, From_date, To_date,Reason_for_leave,Manager_name,leaveDuration], (err, result) => {
       if (err) {
         console.error('MySQL query error:', err);
         res.status(500).send('Internal Server Error');
       } else {
         res.status(201).json({ leaveDuration });
-      }
-    });
+      } 
+    }); 
   }); 
   app.get('/leavedetails', (req, res) => {
-    const ID = req.query.EmployerId;  
+    const ID = req.query.EmployerId;   
   
-    const sql = 'SELECT From_date, To_date,Reason_for_leave,Manager_name FROM leaveduration WHERE EmployerId = ?';
+    const sql = 'SELECT Username,From_date, To_date,Reason_for_leave,Manager_name FROM leaveduration WHERE EmployerId = ?';
     db.query(sql, [ID], (error, results) => {
       if (error) {
         console.error('Error retrieving leave details: ' + error.message);
@@ -218,13 +219,13 @@ app.get('/api/allEmployee', (req, res) => {
         return res.status(404).json({ error: 'Leave request not found' });
       }  
   
-      const { From_date, To_date,Reason_for_leave,Manager_name } = results[0];
+      const { Username,From_date, To_date,Reason_for_leave,Manager_name } = results[0];
       const duration = calculateLeaveDuration(From_date, To_date);
   
-      return res.status(200).json({ message: 'Duration', LeaveDays: duration,From:From_date,To:To_date,Reason:Reason_for_leave,Manager:Manager_name});
+      return res.status(200).json({ message: 'Duration', LeaveDays: duration,EmployeeName:Username,From:From_date,To:To_date,Reason:Reason_for_leave,Manager:Manager_name});
       
-    });   
-  });  
+    });    
+  });     
   
   function calculateLeaveDuration(startDate, endDate) {
     const start = new Date(startDate);
@@ -232,8 +233,8 @@ app.get('/api/allEmployee', (req, res) => {
     const timeDifference = end - start;
     const leaveDurationDays = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
     return leaveDurationDays;
-  } 
-   
+  }    
+     
          
     
       function calculateLeaveDuration(startDate, endDate) {
@@ -246,11 +247,17 @@ app.get('/api/allEmployee', (req, res) => {
     }    
 
 
+
+
+
+    //Employee Details
+
  //Listen and serve port
 
     app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`); 
-      });   
+      });
+
 
        
  
